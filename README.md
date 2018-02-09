@@ -5,7 +5,7 @@ Shift Register Manager with easy bit manipulation and an array of 1-32 bits of s
 
 The AAShifterEx library for Arduino is a flexible way to manage shift registers using the standard shift register or SPI-like protocol.  It allows access to the array elements using array syntax.  Each element is an ArrayByte object that acts like and is accessed like an array of bits.  AAShifterEx is a template class able to be instantiatied as any unsigned integer data type: char, int, short, or long.
 
-Technically, since the underlying storage is an array, a single operation can be (Elements * ElementBitSize) bits.
+Technically, since the underlying storage is an array, a single operation can be (Elements * ElementBitSize) bits.  Think of AASHifterEX as and array of an array of bits that know how to output themselves.
 
 ### Inspiration
 
