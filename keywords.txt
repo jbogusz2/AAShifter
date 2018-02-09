@@ -1,0 +1,33 @@
+#######################################
+# Syntax Coloring Map For TCA8418
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+AAShifterEx	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+size KEYWORD2
+init KEYWORD2
+setBitLength KEYWORD2
+setLength KEYWORD2
+clear KEYWORD2
+set KEYWORD2
+output KEYWORD2
+commit KEYWORD2
+autoSenseBitLength KEYWORD2
+Bits KEYWORD2
+Length KEYWORD2	
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
+SHIFT_PROTOCOL KEYWORD3
+SHIFT_REGISTER KEYWORD3
+SHIFT_SPI KEYWORD3
