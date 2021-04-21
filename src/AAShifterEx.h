@@ -62,6 +62,12 @@ enum SHIFT_PROTOCOL
 	SHIFT_SPI
 };
 
+enum BITLEN_MODE
+{
+	OVERALL,
+	EACH
+};
+
 template <class T> class AAShifterEx {
   public:
 
@@ -71,6 +77,12 @@ template <class T> class AAShifterEx {
 
 	  void setBitLength(uint8_t BitLength);		// manually sets the number of bits to shift per buffer element.  
 	  void setLength(uint8_t buffer_length);	// initializes the buffer and length
+	  void setBitLengthMode(BITLEN_MODE mode);	// sets the way bits are counted for output
+												// OVERALL = over the output of all array elements, output will stop at bitLength count
+												// EACH = over the output of all array element bits, output will stop at bitLength count for each array element shifted
+												//			each array element will be shifted, but only for bitLength number of bits.
+												//				ex. bitLength = 4, 3 elements.  Each element is shifted out for 4 bits
+												//					you ay need this if some bits are status and others output.
 
 	  // clear/set operations
 	  void clear();							// clears the entire buffer to all 0's.		does not output
@@ -96,26 +108,28 @@ template <class T> class AAShifterEx {
 
   private:
 
-	  int dataPin;
-	  int clockPin;
-	  int latchPin;
+		int dataPin;
+		int clockPin;
+		int latchPin;
   
-	  ArrayByte<T>* buffer;					// array of T values
+		ArrayByte<T>* buffer;					// array of T values
 
-	  SHIFT_PROTOCOL shiftProtocol = SHIFT_PROTOCOL::SHIFT_REGISTER;
-  
-	  uint8_t length = 1;
-	  uint8_t bitOrder;						// MSB or LSB FIRST?
-	  uint8_t bitLength;
-	  bool onesComplement = false;
+		SHIFT_PROTOCOL shiftProtocol = SHIFT_PROTOCOL::SHIFT_REGISTER;
+		BITLEN_MODE bitLenMode = BITLEN_MODE::OVERALL;
 
-	  void initBuffer();
+		uint8_t length = 1;
+		uint8_t bitOrder;						// MSB or LSB FIRST?
+		uint8_t bitLength;
+		int bitCounter = 0
+		bool onesComplement = false;
 
-	  // clear/set operations
-	  void bulkOp(ArrayByte<T> value);		// used to commit clear and set operations.
+		void initBuffer();
 
-	  // output operations
-	  void shift(T val);
+		// clear/set operations
+		void bulkOp(ArrayByte<T> value);		// used to commit clear and set operations.
+
+		// output operations
+		bool shift(T val);
 };
 
 template class AAShifterEx<uint8_t>;

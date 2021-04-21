@@ -91,6 +91,12 @@ void AAShifterEx<T>::setLength(uint8_t buffer_length)
 	initBuffer();
 }
 
+template <typename T>
+void AAShifterEx<T>::setBitLengthMode(BITLEN_MODE mode)
+{
+	bitLenMode = mode;
+}
+
 
 // ************************************************************************
 // CLEAR / SET
@@ -166,8 +172,10 @@ void AAShifterEx<T>::commit()
 	digitalWrite(latchPin, LOW);	// also CS for SPI
 	digitalWrite(clockPin, LOW);
 	
+	bitCounter = 0;
 	int ctr = 0;
 	int i = bitOrder == LSBFIRST ? -1 : length;
+	bool stopShifting = false;
 
 	// if LSBFIRST, buffer 0-> length, bits 0->n
 	// if MSBFIRST, buffer length-1 -> 0, bits n->0
@@ -183,8 +191,11 @@ void AAShifterEx<T>::commit()
 
 		outputVal = onesComplement ? ~outputVal : outputVal;
 
-		shift(outputVal);
+		stopShifting = shift(outputVal);
 		ctr++;
+
+		if (stopShifting)
+			break;
 	}
 
 	//for(int i = (numBanks-1); i >= 0; i--)
@@ -206,14 +217,19 @@ void AAShifterEx<T>::commit()
 }
 
 template <typename T>
-void AAShifterEx<T>::shift(T val)
+bool AAShifterEx<T>::shift(T val)
 {
 	uint8_t i;
 	uint8_t shifted = 0;
 	bool outputVal = 0;
+	// either shift max bits of size of T bits or bitLength
+	uint8_t maxBits = bitMode == BITLEN_MODE::EACH ? bitLength : sizeof(val)*8;
+/*
+	if (bitMode == BITLEN_MODE::EACH)
+		bitCounter = 0;*/
 
-
-	for (i = 0; i < bitLength; i++) {
+	//for (i = 0; i < bitLength; i++) {
+	for (i = 0; i < maxBits; i++) {
 		if (bitOrder == LSBFIRST)
 			outputVal = !!(val & ((T)1 << i));
 		else
@@ -223,7 +239,11 @@ void AAShifterEx<T>::shift(T val)
 
 		digitalWrite(clockPin, HIGH);
 		digitalWrite(clockPin, LOW);
+
+		if (++bitCounter >= bitLength)
+			return true;
 	}
+	return false;
 }
 
 // ************************************************************************
